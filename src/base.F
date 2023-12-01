@@ -9,15 +9,15 @@
 
 !-----------------------------------------------------------------------------
 !
-!  subroutine BASE:  Specify base-state arrays for CM1. 
+!  subroutine BASE:  Specify base-state arrays for CM1.
 !
 !    Note:   The base state in CM1 is assumed to be in hydrostatic balance.
 !            See "The governing equations for CM1" for more details:
 !               http://www2.mmm.ucar.edu/people/bryan/cm1/cm1_equations.pdf
 !
-!    Note:  The variables psurf, tsurf, and qsurf refer to very-near-surface 
+!    Note:  The variables psurf, tsurf, and qsurf refer to very-near-surface
 !           ATMOSPHERIC conditions (not land/ocean surface conditions).
-!           They are used primarily for diagnostics purposes, such as for 
+!           They are used primarily for diagnostics purposes, such as for
 !           calculation of surface-based CAPE and CIN.
 !
 !-----------------------------------------------------------------------------
@@ -165,9 +165,9 @@
 !-----------------------------------------------------------------------
 !  isnd = 2
 !  Dry isothermal base state
-            
+
       ELSEIF(isnd.eq.2)THEN
-          
+
         ! Set these two variables for dry isothermal sounding
 
         t_sfc    =   250.0    ! Temperature of atmosphere (K)
@@ -233,7 +233,7 @@
           ! Calculate the exner pressure from the pressure field.
           pi0(i,j,k)=(prs0(i,j,k)/p00)**(rd/cp)
 
-          ! Calculate the theta field from temperature and the 
+          ! Calculate the theta field from temperature and the
           ! specified lapse rate.
           th0(i,j,k)=th_sfc*(t0(i,j,k)/th_sfc)**(1-g/(lapse*cp))
 
@@ -294,7 +294,7 @@
           tmp=tlast+0.3*(tmp-tlast)
           tlast=tmp
         enddo
- 
+
         t0(i,j,1)=tmp
         th0(i,j,1)=tmp/pi0(i,j,1)
         rh0(i,j,1)=1.0
@@ -331,16 +331,16 @@
               if(dowr) write(outfile,*) '  stuck in loop!'
               call stopcm1
             endif
- 
+
           t0(i,j,k)=t2
           th0(i,j,k)=th2
           qv0(i,j,k)=rslf(prs0(i,j,k),th0(i,j,k)*pi0(i,j,k))
           rh0(i,j,k)=1.0
- 
+
           th1=th2
           qv1=qv2
           t1=t2
- 
+
         enddo
 
         do k=1,nk
@@ -468,12 +468,12 @@
 !  The format is the same as that for the WRF Model.
 !
 !  One-line header containing:   sfc pres (mb)    sfc theta (K)    sfc qv (g/kg)
-!   
-!   (Note1: here, "sfc" refers to near-surface atmospheric conditions. 
-!    Technically, this should be z = 0, but in practice is obtained from the   
+!
+!   (Note1: here, "sfc" refers to near-surface atmospheric conditions.
+!    Technically, this should be z = 0, but in practice is obtained from the
 !    standard reporting height of 2 m AGL/ASL from observations)
-!   (Note2: land-surface temperature and/or sea-surface temperature (SST) are 
-!    specified elsewhere: see tsk0 in namelist.input and/or tsk array in 
+!   (Note2: land-surface temperature and/or sea-surface temperature (SST) are
+!    specified elsewhere: see tsk0 in namelist.input and/or tsk array in
 !    init_surface.F)
 !
 ! Then, the following lines are:   z (m)    theta (K)   qv (g/kg)    u (m/s)    v (m/s)
@@ -1481,9 +1481,9 @@
 
 !------------------------------------------------------------------
 ! isnd = 15
-      
+
       ! base state for the simulation of DYCOMS-II RF01,
-      ! nonprecipitating stratocumulus (Stevens et al, 2005, MWR)            
+      ! nonprecipitating stratocumulus (Stevens et al, 2005, MWR)
 
       ! and DYCOMS-II RF02
       ! drizzling stratocumulus (Ackerman et al, 2009, MWR)
@@ -1507,7 +1507,7 @@
 #endif
           call stopcm1
         endif
-         
+
         do j = 1,nj
         do i = 1,ni
 
@@ -1600,7 +1600,7 @@
 
         enddo
         enddo
- 
+
         psurf = prs_sfc
         qsurf = qv_sfc
         tsurf = th_sfc * pi_sfc
@@ -1613,7 +1613,7 @@
         if( myid.eq.0 ) print *
         if( myid.eq.0 ) print *,'  lwp = ',lwp
         if( myid.eq.0 ) print *
- 
+
 
 !------------------------------------------------------------------
 !   Moeng and Sullivan (1994, JAS) PBL
@@ -2110,7 +2110,7 @@
 !  This reduces errors associated with buoyancy term
 !  (seems kind of redundant ... but it works)
 
-      !  This qv0 must match specification of qva array in 
+      !  This qv0 must match specification of qva array in
       !  the INIT3D subroutine
       !  (i.e., identical bit-for-bit calculation)
 
@@ -2144,7 +2144,7 @@
 #endif
       call extrapbcs(rho0)
 
-      IF( psolver.eq.5 .or. psolver.eq.6 )THEN   
+      IF( psolver.eq.5 .or. psolver.eq.6 )THEN
         ! incompressible or compressible-Boussinesq:  set rho0 to a constant
 
         do k=kb,ke
@@ -2475,7 +2475,7 @@
           uval = 15.0
           vval =  0.0
         elseif( testcase.eq.4 )then
-          ! nonprecipitating stratocumulus case (Stevens et al. MWR 2005)            
+          ! nonprecipitating stratocumulus case (Stevens et al. MWR 2005)
           uval =  7.0
           vval = -5.5
         elseif( testcase.eq.9 )then
@@ -2752,7 +2752,7 @@
         endif
         if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
       enddo
- 
+
       radsfc = -2.0 /( 3600.0 * 24.0 )
       z1     =  1500.0
       z2     =  2100.0
@@ -2828,7 +2828,7 @@
 
       ! hurricane boundary layer (Bryan et al, 2017, BLM)
 
-!!!      hurr_rad = 40000.0      ! radius from center of hurricane (m) 
+!!!      hurr_rad = 40000.0      ! radius from center of hurricane (m)
                                  ! (cm1r21.0: now set this in namelist.input)
 
       wmin  =   -0.01    ! value of w at z = z1
@@ -2870,7 +2870,7 @@
 
     IF( testcase .eq. 7 )THEN
 
-      !   RICO, precipitating shallow Cu  
+      !   RICO, precipitating shallow Cu
       !   (VanZanten et al 2011, JAMES)
 
       if( myid.eq.0 ) print *
@@ -2888,7 +2888,7 @@
         endif
         if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
       enddo
- 
+
       thsfc  = -2.5 /( 3600.0 * 24.0 )
 
       do k=1,nk
