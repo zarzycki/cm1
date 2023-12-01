@@ -89,6 +89,9 @@
                                          thvsnd,pisnd,psnd,tsnd,rhsnd
       real, dimension(:), allocatable :: thinterp,qvinterp,uinterp,vinterp, &
                                          pinterp,tinterp,rhinterp
+!++CMZ
+      real, dimension(:), allocatable :: ugsnd,uginterp,vgsnd,vginterp,wprofsnd,wprofinterp
+!--CMZ
       integer :: kk,kup,kdn
       real :: interp_frac
 
@@ -492,7 +495,7 @@
 !         (which is nz * dz when stretch_z=0, or ztop when stretch_z=1,  etc)
 !
 
-      ELSEIF( isnd.eq.7 .or. isnd.eq.17 )then
+      ELSEIF( isnd.eq.7 .or. isnd.eq.17)then
 
         if(dowr) write(outfile,*)
         if(dowr) write(outfile,*) ' Reading sounding from external file, input_sounding'
@@ -521,6 +524,15 @@
         allocate(  rhsnd(nmax) )
         rhsnd = 0.0
 
+!++CMZ
+        allocate(   ugsnd(nmax) )
+        ugsnd = 0.0
+        allocate(   vgsnd(nmax) )
+        vgsnd = 0.0
+        allocate(   wprofsnd(nmax) )
+        wprofsnd = 0.0
+!--CMZ
+
         allocate( thinterp(nk) )
         thinterp = 0.0
         allocate( qvinterp(nk) )
@@ -536,6 +548,15 @@
         allocate( rhinterp(nk) )
         rhinterp = 0.0
 
+!++CMZ
+        allocate( uginterp(nk) )
+        uginterp = 0.0
+        allocate( vginterp(nk) )
+        vginterp = 0.0
+        allocate( wprofinterp(nk) )
+        wprofinterp = 0.0
+!--CMZ
+
       prc0:  &
       IF( myid.eq.0 )THEN
         ! only processor 0 does this:
@@ -550,7 +571,10 @@
         nsnd=1
         do k=1,nmax
           if( isnd.eq.7 )then
-            read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1),usnd(k+1),vsnd(k+1)
+            !++CMZ
+            read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1),usnd(k+1),vsnd(k+1),  &
+                 ugsnd(k+1),vgsnd(k+1),wprofsnd(k+1)
+            !--CMZ
           elseif( isnd.eq.17 )then
             read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1)
           else
@@ -587,6 +611,11 @@
         call MPI_BCAST(qvsnd(1),nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
         call MPI_BCAST(usnd(1) ,nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
         call MPI_BCAST(vsnd(1) ,nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
+        !++CMZ
+        call MPI_BCAST(ugsnd(1) ,nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
+        call MPI_BCAST(vgsnd(1) ,nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
+        call MPI_BCAST(wprofsnd(1) ,nsnd,MPI_REAL   ,0,MPI_COMM_WORLD,ierr)
+        !--CMZ
 #endif
 
         if(imoist.eq.0) qv_sfc = 0.0
@@ -605,6 +634,13 @@
         zsnd(1) = 0.0
         thsnd(1) = th_sfc
         qvsnd(1) = qv_sfc
+
+        !++CMZ
+        ! Set sounding value at 0 to lowest value in input sounding
+        ugsnd(1)    = ugsnd(2)
+        vgsnd(1)    = vgsnd(2)
+        wprofsnd(1) = wprofsnd(2)
+        !--CMZ
 
         if(imoist.eq.0) qvsnd = 0.0
 
@@ -711,6 +747,11 @@
              pinterp(k) =  psnd(kdn) + ( psnd(kup)- psnd(kdn))*interp_frac
              tinterp(k) =  tsnd(kdn) + ( tsnd(kup)- tsnd(kdn))*interp_frac
             rhinterp(k) = rhsnd(kdn) + (rhsnd(kup)-rhsnd(kdn))*interp_frac
+            !++CMZ
+            uginterp(k) = ugsnd(kdn) + (ugsnd(kup)-ugsnd(kdn))*interp_frac
+            vginterp(k) = vgsnd(kdn) + (vgsnd(kup)-vgsnd(kdn))*interp_frac
+            wprofinterp(k) = wprofsnd(kdn) + (wprofsnd(kup)-wprofsnd(kdn))*interp_frac
+            !--CMZ
 
             if(i.eq.1.and.j.eq.1.and.dowr) write(outfile,*) '       ',zsnd(kdn),zh(i,j,k),zsnd(kup),interp_frac
 
@@ -725,6 +766,12 @@
          prs0(i,j,k) =  pinterp(k)
            t0(i,j,k) =  tinterp(k)
           rh0(i,j,k) = rhinterp(k)
+          !++CMZ
+          ! I think this is inefficient since inside the i,j loop but *shrugs*
+          ug(k) = uginterp(k)
+          vg(k) = vginterp(k)
+          wprof(k) = wprofinterp(k)
+          !--CMZ
         enddo
 
         ! get pi0 and prs0 from thv0, using hydrostatic equation
@@ -778,6 +825,14 @@
         deallocate(  pinterp )
         deallocate(  tinterp )
         deallocate( rhinterp )
+        !++CMZ
+        deallocate(  ugsnd )
+        deallocate(  uginterp )
+        deallocate(  vgsnd )
+        deallocate(  vginterp )
+        deallocate(  wprofsnd )
+        deallocate(  wprofinterp )
+        !--CMZ
 
 
 !-----------------------------------------------------------------------
@@ -2737,19 +2792,33 @@
       if( myid.eq.0 ) print *
       if( myid.eq.0 ) print *,'  k,zf,w:'
 
-      wmin  =  -0.0065
-      z1    =   1500.0
-      z2    =   2100.0
+      wmin  =  -0.0050
+      z1    =   2100.0
+      z2    =   3500.0
+
+      !do k=1,nk
+      !  ! note:  wprof is on w levels (ie, full levels).   Use zf.
+      !  if( zf(1,1,k).le.z1 )then
+      !    wprof(k) = 0.0 + ( wmin - 0.0 )*(zf(1,1,k)-0.0)/(z1-0.0)
+      !  elseif( zf(1,1,k).le.z2 )then
+      !    wprof(k) = wmin + ( 0.0 - wmin )*(zf(1,1,k)-z1)/(z2-z1)
+      !  else
+      !    wprof(k) = 0.0
+      !  endif
+      !  if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
+      !enddo
 
       do k=1,nk
-        ! note:  wprof is on w levels (ie, full levels).   Use zf.
-        if( zf(1,1,k).le.z1 )then
-          wprof(k) = 0.0 + ( wmin - 0.0 )*(zf(1,1,k)-0.0)/(z1-0.0)
-        elseif( zf(1,1,k).le.z2 )then
-          wprof(k) = wmin + ( 0.0 - wmin )*(zf(1,1,k)-z1)/(z2-z1)
-        else
-          wprof(k) = 0.0
-        endif
+       ! Determine wprof based on zf
+       if( zf(1,1,k) <= 800.0 )then
+         wprof(k) = 0.0 + (-0.0025 - 0.0) * zf(1,1,k) / 800.0
+       elseif( zf(1,1,k) <= 1800.0 )then
+         wprof(k) = -0.0025
+       elseif( zf(1,1,k) <= 3000.0 )then
+         wprof(k) = -0.0025 + (-0.006 + 0.0025) * (zf(1,1,k) - 1800.0) / (3000.0 - 1800.0)
+       else
+         wprof(k) = -0.006
+       endif
         if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
       enddo
 
@@ -2788,11 +2857,16 @@
 
       if( myid.eq.0 ) print *
       if( myid.eq.0 ) print *,'  k,ug,vg '
-      do k=1,nk
-        ug(k) = -10.0 + 0.0018 * zh(1,1,k)
-        vg(k) =   0.0
-      enddo
-      if( myid.eq.0 ) print *
+     do k=1,nk
+       if (zh(1,1,k) <= 1500.0) then
+         vg(k) = 1.0 - 0.00133333 * zh(1,1,k)
+       else
+         vg(k) = -1.0
+       endif
+       ug(k) = -10.5 + 0.00266667 * zh(1,1,k)
+      if( myid.eq.0 ) print *,k,zf(1,1,k),ug(k),vg(k)
+     enddo
+
 
     ENDIF
 
