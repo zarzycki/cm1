@@ -7,3 +7,12 @@ freezeH2O.dat
 *.o
 onefile.F
 cm1.exe
+cm1run.*
+cm1rst_*.dat
+cm1out_diag_*.nc
+cm1out_*.nc
+avg*.nc
+cm1.print.out
+cm1_config.txt
+proc.info
+
