@@ -2890,6 +2890,41 @@
         if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
       enddo
 
+
+! Debugging
+!       radsfc = -2.0 /( 3600.0 * 24.0 )
+!       z1     =  1500.0
+!       z2     =  2100.0
+!
+!       do k=1,nk
+!         if( zh(1,1,k).le.z1 )then
+!           thfrc(k) = radsfc
+!         elseif( zh(1,1,k).le.z2 )then
+!           thfrc(k) = radsfc + ( 0.0 - radsfc )*(zh(1,1,k)-z1)/(z2-z1)
+!         else
+!           thfrc(k) = 0.0
+!         endif
+!       enddo
+!
+!       if( myid.eq.0 ) print *
+!       if( myid.eq.0 ) print *,'  k,zh,thfrc,qvfrc '
+!
+!       qvsfc  =  -1.2e-8
+!       z1     =   300.0
+!       z2     =   500.0
+!
+!       do k=1,nk
+!         if( zh(1,1,k).le.z1 )then
+!           qvfrc(k) = -1.2e-8
+!         elseif( zh(1,1,k).le.z2 )then
+!           qvfrc(k) = qvsfc + ( 0.0 - qvsfc )*(zh(1,1,k)-z1)/(z2-z1)
+!         else
+!           qvfrc(k) = 0.0
+!         endif
+!         if( myid.eq.0 ) print *,k,zh(1,1,k),thfrc(k)*3600.0*24.0,qvfrc(k)
+!       enddo
+
+
       if( myid.eq.0 ) print *
       if( myid.eq.0 ) print *,'  k,ug,vg '
 
