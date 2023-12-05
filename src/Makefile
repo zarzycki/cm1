@@ -8,32 +8,32 @@
 #              (NOTE: Don't change lines 3 and 4!)
 #  Note:  you may need to remove -DNCFPLUS if you use an old version of netcdf
 #
-#OUTPUTINC = -I$(NETCDF)/include
-#OUTPUTLIB = -L$(NETCDF)/lib
-#OUTPUTOPT = -DNETCDF -DNCFPLUS
-#LINKOPTS  = -lnetcdf -lnetcdff
+OUTPUTINC = -I$(NETCDF)/include
+OUTPUTLIB = -L$(NETCDF)/lib
+OUTPUTOPT = -DNETCDF -DNCFPLUS
+LINKOPTS  = -lnetcdf -lnetcdff
 #-----------------------------------------------------------------------------
 
 
 #-----------------------------------------------------------------------------
 #                     HARDWARE SECTION
-#-- Choose the appropriate architecture, and uncomment all lines 
+#-- Choose the appropriate architecture, and uncomment all lines
 #-- in that section.  See "README.compile" for more information.
 #-----------------------------------------------------------------------------
-#  single processor, Intel compiler 
+#  single processor, Intel compiler
 #      (eg, NCAR's yellowstone/caldera/cheyenne)
 #FC   = ifort
 #OPTS = -O3 -xHost -ip -assume byterecl -fp-model precise -ftz -no-fma
 #CPP  = cpp -C -P -traditional -Wno-invalid-pp-token -ffreestanding
 #-----------------------------------------------------------------------------
-#  multiple processors, distributed memory (MPI), Intel compiler 
+#  multiple processors, distributed memory (MPI), Intel compiler
 #      (eg, NCAR's yellowstone/cheyenne)
-#FC   = mpif90
-#OPTS = -O3 -xHost -ip -assume byterecl -fp-model precise -ftz -no-fma
-#CPP  = cpp -C -P -traditional -Wno-invalid-pp-token -ffreestanding
-#DM   = -DMPI
+FC   = mpif90
+OPTS = -O3 -xHost -ip -assume byterecl -fp-model precise -ftz -no-fma
+CPP  = cpp -C -P -traditional -Wno-invalid-pp-token -ffreestanding
+DM   = -DMPI
 #-----------------------------------------------------------------------------
-#  multiple processors, shared memory (OpenMP), Intel compiler 
+#  multiple processors, shared memory (OpenMP), Intel compiler
 #      (eg, NCAR's yellowstone/cheyenne)
 #FC   = mpif90
 #OPTS = -O3 -xHost -ip -assume byterecl -fp-model precise -ftz -no-fma -qopenmp
@@ -248,7 +248,7 @@ hifrq.o: input.o constants.o cm1libs.o adv.o adv_routines.o bc.o ib_module.o wri
 ib_module.o: input.o constants.o bc.o comm.o
 init3d.o:  constants.o input.o misclibs.o cm1libs.o bc.o comm.o module_mp_nssl_2mom.o poiss.o parcel.o ib_module.o turb.o
 init_physics.o: constants.o input.o sfclay.o sfclayrev.o slab.o radtrns3d.o irrad3d.o goddard.o module_ra_rrtmg_lw.o module_ra_rrtmg_sw.o module_sf_gfdl.o module_sf_mynn.o module_bl_mynn.o module_sf_myjsfc.o
-init_surface.o: constants.o input.o oml.o 
+init_surface.o: constants.o input.o oml.o
 init_terrain.o: constants.o input.o bc.o comm.o adv_routines.o
 interp_routines.o: constants.o input.o
 irrad3d.o: radlib3d.o
