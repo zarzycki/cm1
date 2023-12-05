@@ -1,4 +1,58 @@
+
 # CM1 and real-world LES
+
+NOTE: For now, this only works over ocean.
+
+## Generate input_sounding
+
+The input sounding for isnd/testcase 99 includes 3 additional columns not included when isnd = 7. These three columns include the zonal geostrophic wind (ug, m/s), the meridional geostrophic wind (vg, m/s), and the z-coordinate vertical velocity (w, w/s).
+
+There are some scripts that are available in `./tools/gen-profiles/` that can help with generating input_soundings.
+
+#### From ERA5
+
+1. Edit `driver-ERA5-profiles.sh` to leverage the NCAR RDA to generate snapshot ERA5 intermediate files at a location and a series of times.
+2. If desirable, average over multiple ERA5 intermediate files using `nceavg files*nc avg.nc`
+3. Edit top of `write-ERA5-profile-to-CM1.ncl` to point to relevant ERA5 data and run using NCL. This will automatically populate a CM1 "sounding" file with 8 columns needed for isnd/testcase = 99.
+
+#### From obs + ERA5 forcing
+
+1. Generate your own CM1 sounding file as you otherwise would for `isnd = 7` (each row has z, theta, qv, u, v)
+2. Run steps 1 and 2 from above to generate ERA5 large-scale forcing fields
+3. Edit top of `add-forcing-to-cm1-isnd.ncl` to point to CM1 sounding from step 1 and ERA5 file from step 2. Run NCL, which should create another CM1 sounding file, but now with three columns appended.
+
+## Use sample namelist
+
+Things to set:
+
+```
+! Config settings
+ testcase  =  99,  ! Colin's test case to force wprof activation
+ isnd      =  99,  ! Colin's test case to read 8-column file with ug, vg, wprof
+ lspgrad   =  2,   ! Get large-scale pressure gradient from ug/vg
+
+! Coriolis
+ fcor    = 0.353e-4,  ! Calculate and set based on lat of interest
+
+! Radiation settings (set date + location to get solar zenith, etc.)
+ radopt  =        2,    ! Radiation option (0 off, 2 RRTMG)
+ dtrad   =    300.0,
+ ctrlat  =    13.19,
+ ctrlon  =   -59.54,
+ year    =     2020,
+ month   =        2,
+ day     =        1,
+ hour    =       00,
+ minute  =       00,
+ second  =       00,
+
+! Surface conditions
+ tsk0       = 300.30,    ! Surface temperature (K)
+```
+
+---
+
+## Notes
 
 
 ### Large scale pressure gradient
@@ -239,5 +293,3 @@ ptype - Explicit moisture scheme:
  iautoc - Include autoconversion of qc to qr when ptype = 2?  (0=no, 1=yes)
             (Goddard-LFO scheme only)
 ```
-
-
