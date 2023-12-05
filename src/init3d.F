@@ -9,14 +9,14 @@
 
 !-----------------------------------------------------------------------------
 !
-!  subroutine INIT3D:  Specify initial conditions for CM1. 
+!  subroutine INIT3D:  Specify initial conditions for CM1.
 !
 !    Note:  init3d assumes that the base state arrays (th0,pi0,rho0,etc)
 !           have already been specified.
 !
 !    Note:  In general, the code below assumes that the 3d initial state
 !           for CM1 is simply the base-state conditions (from BASE) plus
-!           specified perturbations (defined in INIT3D).  Hence, most 
+!           specified perturbations (defined in INIT3D).  Hence, most
 !           code below calculates perturbation potential temp., pressure,
 !           etc  (tha,ppi arrays).
 !
@@ -85,7 +85,7 @@
 #endif
 
       implicit none
- 
+
       real, dimension(ib:ie) :: xh,rxh,uh,ruh
       real, dimension(ib:ie+1) :: xf,rxf,uf,ruf
       real, dimension(jb:je) :: yh,vh,rvh
@@ -119,7 +119,7 @@
       real, dimension(kpb:kpe) :: cfa,cfc,ad1,ad2
       complex, dimension(ipb:ipe,jpb:jpe,kpb:kpe) :: pdt,lgbth,lgbph
       complex, dimension(ipb:ipe,jpb:jpe) :: rhs,trans
- 
+
 !-----------------------------------------------------------------------
 
       integer i,j,k,kk,l,n,nn,nbub,nloop
@@ -161,9 +161,9 @@
       logical :: doit
 
 
-      ! Note:  By default, CM1 uses the same set of psuedorandom numbers 
-      !        every time it is called.  To use truly random perturbations 
-      !        (ie, different sets of random perturbations every time CM1 
+      ! Note:  By default, CM1 uses the same set of psuedorandom numbers
+      !        every time it is called.  To use truly random perturbations
+      !        (ie, different sets of random perturbations every time CM1
       !        is used), then change this varliable to .true.
       logical, parameter :: use_truly_random_pert  =  .false.
 
@@ -192,7 +192,7 @@
         ! for sps, we want to get a MINIMUM value at the surface, so...
         ! set sps to an absurdly large number:
         sps(i,j,n)=200000.0
-        ! svs and sus can be negative or positive, 
+        ! svs and sus can be negative or positive,
         ! but we want to get a MAXIMUM value, so...
         ! set svs and sus to an absurdly low (negative) number:
         svs(i,j,n)=-1000.0
@@ -455,8 +455,8 @@
         bvrad   =   1400.0  ! vertical radius of bubble (m)
         bptpert =      1.0  ! max potential temp perturbation (K)
 
-        ! By default, CM1 sets qv=constant at a constant height level for 
-        ! this value of iinit.  If you would rather have rh=constant at 
+        ! By default, CM1 sets qv=constant at a constant height level for
+        ! this value of iinit.  If you would rather have rh=constant at
         ! a constant height level, then set this to .true.
         maintain_rh = .false.
 
@@ -479,7 +479,7 @@
 !-----------------------------------------------------------------------
 !  iinit = 2
 !  Cold pool (dam break style)
-!  reference:  
+!  reference:
 
       ELSEIF(iinit.eq.2)THEN
 
@@ -491,8 +491,8 @@
         zdep     =    2500.0   ! depth of cold pool (m)
         bptpert  =      -6.0   ! max temp perturbation at sfc (K)
 
-        ! By default, CM1 sets qv=constant at a constant height level for 
-        ! this value of iinit.  If you would rather have rh=constant at 
+        ! By default, CM1 sets qv=constant at a constant height level for
+        ! this value of iinit.  If you would rather have rh=constant at
         ! a constant height level, then set this to .true.
         maintain_rh = .true.
 
@@ -511,14 +511,14 @@
 !-----------------------------------------------------------------------
 !  iinit = 3
 !  Line of warm bubbles
-!  reference:  
+!  reference:
 
       ELSEIF(iinit.eq.3)THEN
 
         if(dowr) write(outfile,*)
         if(dowr) write(outfile,*) '  Line of warm bubbles'
         if(dowr) write(outfile,*)
- 
+
         nbub    =      3     ! number of warm bubbles
         ric     =  30000.0   ! center of bubble in x-direction (m)
         zc      =   1400.0   ! height of center of bubble above ground (m)
@@ -526,8 +526,8 @@
         bvrad   =   1400.0   ! vertical radius of bubble (m)
         bptpert =      2.0   ! max potential temp perturbation (K)
 
-        ! By default, CM1 sets qv=constant at a constant height level for 
-        ! this value of iinit.  If you would rather have rh=constant at 
+        ! By default, CM1 sets qv=constant at a constant height level for
+        ! this value of iinit.  If you would rather have rh=constant at
         ! a constant height level, then set this to .true.
         maintain_rh = .false.
 
@@ -546,7 +546,7 @@
           if(n.eq.3) rjc= 63000.0
 
           if(dowr) write(outfile,*) '  ric,rjc=',n,ric,rjc
- 
+
           do k=kb,ke
           do j=jb,je
           do i=ib,ie
@@ -1259,8 +1259,8 @@
         bvrad   =   1500.0  ! vertical radius of bubble (m)
         bptpert =      2.0  ! max potential temp perturbation (K)
 
-        ! By default, CM1 sets qv=constant at a constant height level for 
-        ! this value of iinit.  If you would rather have rh=constant at 
+        ! By default, CM1 sets qv=constant at a constant height level for
+        ! this value of iinit.  If you would rather have rh=constant at
         ! a constant height level, then set this to .true.
         maintain_rh = .false.
 
@@ -1411,7 +1411,7 @@
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
-        
+
       if(imoist.eq.1 .and. maintain_rh)then
 
         !! maintain rh
@@ -1439,7 +1439,7 @@
       IF( irandp.eq.1 )THEN
 
       IF( testcase.eq.0 )THEN
-        ! not a pre-configured test case: 
+        ! not a pre-configured test case:
 
         ! this is the amplitude of the theta perturbations
         ! (plus or minus this value in K)
@@ -1514,6 +1514,36 @@
           enddo
         endif
         enddo
+
+!++CMZ
+
+      ELSEIF( testcase.eq.99 )THEN
+
+        ! this is the amplitude of the theta perturbations
+        ! (plus or minus this value in K)
+        amplitude = 0.25
+
+        ! random numbers added here
+        ! (can be modified to only place perturbations in certain
+        !  locations, but this default code simply puts them
+        !  everywhere)
+        do k=1,nk
+          ! cm1r17: loop over entire domain
+          do jj = 0,ny+2
+          do ii = 0,nx+2
+            call random_number(rand)
+            call random_number(rand2)
+            i = ii - myi1 + 1
+            j = jj - myj1 + 1
+            ! check to see if this processor has this gridpoint:
+            IF( i.ge.ib .and. i.le.ie .and. j.ge.jb .and. j.le.je )THEN
+              tha(i,j,k)=tha(i,j,k)+amplitude*(2.0*rand-1.0)
+            ENDIF
+          enddo
+          enddo
+        enddo
+
+!--CMZ
 
       ELSEIF( testcase.eq.4 .or. testcase.eq.5 .or. testcase.eq.7 )THEN
 
@@ -1901,7 +1931,7 @@
 
 !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !  change base state:
-!  WARNING:  for dycore testing only 
+!  WARNING:  for dycore testing only
 !    (do not modify)
 
   dobsmod = .false.
@@ -2044,7 +2074,7 @@
       use mpi
 #endif
       implicit none
- 
+
       logical, intent(in) :: restarted
       double precision, intent(inout) :: mass1
       logical, intent(in), dimension(maxq) :: cloudvar
@@ -2104,7 +2134,7 @@
       real, intent(inout), dimension(imp,kmt,4)     :: ks1,ks2,kn1,kn2
 
 !----------
- 
+
       integer :: i,j,k,n
       real(kind=qp) :: temq
       real :: xw,xe,ys,yn,rtmp,rmin
@@ -2262,7 +2292,7 @@
       enddo
       enddo
       enddo
- 
+
       do k=kb,ke
       do j=jb,je+1
       do i=ib,ie
@@ -2270,7 +2300,7 @@
       enddo
       enddo
       enddo
- 
+
       do k=kb,ke+1
       do j=jb,je
       do i=ib,ie
@@ -2555,7 +2585,7 @@
           ! 181022:  not a restart ... initialize sigma
           do n=1,nparcels
             ! get sigma from z:
-            ! (see Section 3 of "The governing equations for CM1", 
+            ! (see Section 3 of "The governing equations for CM1",
             !  http://www2.mmm.ucar.edu/people/bryan/cm1/cm1_equations.pdf)
             pdata(n,prsig) = zt*(pdata(n,prz)-pdata(n,przs))/(zt-pdata(n,przs))
           enddo
@@ -2563,7 +2593,7 @@
           ! 181022:  this is a restart ... get z
           do n=1,nparcels
             ! get z from sigma:
-            ! (see Section 3 of "The governing equations for CM1", 
+            ! (see Section 3 of "The governing equations for CM1",
             !  http://www2.mmm.ucar.edu/people/bryan/cm1/cm1_equations.pdf)
             pdata(n,prz) = pdata(n,przs) + pdata(n,prsig)*((zt-pdata(n,przs))*rzt)
           enddo
@@ -2728,7 +2758,7 @@
 
       if(dowr) write(outfile,*)
       if(dowr) write(outfile,*) 'Leaving GETSET'
- 
+
       end subroutine getset
 
 

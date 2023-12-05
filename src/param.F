@@ -693,7 +693,7 @@
       betaplane = max( betaplane , 0 )
       betaplane = min( betaplane , 1 )
 
-      ! Cannot use beta plane for axisymmetric simulations, 
+      ! Cannot use beta plane for axisymmetric simulations,
       ! or 2d (x,z) simulations:
       if( axisymm.eq.1 .or. ny.le.3 )  betaplane = 0
 
@@ -828,7 +828,9 @@
 !  begin non-fatal checks:
 
       !-----
-      IF( isnd.eq.7 )THEN
+      !++CMZ
+      IF( isnd.eq.7 .or. isnd .eq. 99)THEN
+      !--CMZ
         IF( iwnd.gt.0 )THEN
         if(myid.eq.0)then
         print *,'  -------------------------------- '
@@ -1708,7 +1710,7 @@
         print *
         print *,'  imoist  = ',imoist
         print *,'  ptype   = ',ptype
-        print *,'  nt_c    = ',nt_c   
+        print *,'  nt_c    = ',nt_c
         print *
         print *,'  nt_c is too small.  Please enter an appropriate value '
         print *,'  in the param3 section of namelist.input '
@@ -3044,7 +3046,7 @@
     !----------
     !  use average surface conditions to determine ust,mol,etc:
     !
-    !  For now, use this for a few well-established test cases. 
+    !  For now, use this for a few well-established test cases.
     !  In future: make this a namelist variable
 
     if( sfcmodel.eq.1 .or. sfcmodel.eq.5 )then
@@ -3176,7 +3178,7 @@
 !-----------------------------------------------------------------------
 !ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 !-----------------------------------------------------------------------
-        ELSEIF((ptype.eq.2).or.(ptype.eq.4))THEN    ! Goddard-LFO or 
+        ELSEIF((ptype.eq.2).or.(ptype.eq.4))THEN    ! Goddard-LFO or
                                                     ! GSR-LFO scheme
 
           iice = 1    ! this means that ptype=2,4 are ice schemes
@@ -3526,7 +3528,7 @@
           if(dowr) write(outfile,*) '         numq   = ',numq
           if(dowr) write(outfile,*) '         ihail  = ',ihail
         if(inum.eq.1)then
-          if(dowr) write(outfile,*) '         assuming constant cloud droplet concentration' 
+          if(dowr) write(outfile,*) '         assuming constant cloud droplet concentration'
           if(dowr) write(outfile,*) '         ndcnst = ',ndcnst
         else
           if(dowr) write(outfile,*) '         predicting cloud droplet concentration'
@@ -4881,6 +4883,8 @@
       IF( testcase.eq.5 ) dolsw = .true.
       IF( testcase.eq.6 ) dolsw = .true.
       IF( testcase.eq.7 ) dolsw = .true.
+
+      IF( testcase.eq.99 ) dolsw = .true.
 
       if( dolsw )then
         if( terrain_flag  .or.  axisymm.eq.1  )then
@@ -6615,7 +6619,7 @@
       if(dowr) write(outfile,*)
 #endif
 
-  ! define grid, assuming no stretching 
+  ! define grid, assuming no stretching
   ! (we will correct the grid later if stretch_x or stretch_y >= 1)
 
     allocate( xfdp(1-ngxy:nx+ngxy+1) )
@@ -6778,7 +6782,7 @@
 
 
       if(dowr) write(outfile,*)
- 
+
       if(dowr) write(outfile,130) 'ib,ibm,ibi,ibc,ibt=',ib,ibm,ibi,ibc,ibt
       if(dowr) write(outfile,130) 'ie,iem,iei,iec,iet=',ie,iem,iei,iec,iet
       if(dowr) write(outfile,130) 'jb,jbm,jbi,jbc,jbt=',jb,jbm,jbi,jbc,jbt
@@ -7269,8 +7273,8 @@
 !  End specify xfdp
 !-----------------------------------------------------------------------
 !
-!  Optional:  to use a different stretching function, or to use 
-!  arbitrarily located grid points, simply comment out the 
+!  Optional:  to use a different stretching function, or to use
+!  arbitrarily located grid points, simply comment out the
 !  "hard-wired" section above, and then specify values for xfref
 !  here.  Do not change anything below here!
 !
@@ -7638,8 +7642,8 @@
 !  End specify yfdp
 !-----------------------------------------------------------------------
 !
-!  Optional:  to use a different stretching function, or to use 
-!  arbitrarily located grid points, simply comment out the 
+!  Optional:  to use a different stretching function, or to use
+!  arbitrarily located grid points, simply comment out the
 !  "hard-wired" section above, and then specify values for yfref
 !  here.  Do not change anything below here!
 !
@@ -7922,10 +7926,10 @@
 ! kb = 0
 ! so ng = 1 and zfw1d(-ng+1:nz+ng)
 ! SUBROUTINE ZGRID(dz, dz_stretch, nz, nbndlyr, gzc, gze, ng, dzmax,ztopstr,rtop,dzmaxtop)
-       
+
        nbndlyr = Int( str_bot/dz_bot + 0.01) - 1
        CALL ZGRID(dz, dz_bot, ke, nbndlyr, gzc, gze, 1, dz_top,ztopstr,rtop,dzmaxtop)
-       
+
          IF ( myid == 0 ) THEN
            DO k = 1,ke
              write(6,*) 'k,gzc,gze = ',k,gzc(k),gze(k)
@@ -7969,8 +7973,8 @@
         ! (note:  specify levels in meters ASL)
         ! See run/config_files/les_StratoCuDrizzle/input_grid_z for an example.
 
-        ! NOTE:  this section of code expects the model heights on HALF LEVELS 
-        !        (aka scalar levels), eg, 0.5*dz, 1.5*dz, 2.5*dz, etc 
+        ! NOTE:  this section of code expects the model heights on HALF LEVELS
+        !        (aka scalar levels), eg, 0.5*dz, 1.5*dz, 2.5*dz, etc
 
         if( myid.eq.0 )then
 
@@ -8035,8 +8039,8 @@
         ! User specifies w levels in a file called "input_grid_z"
         ! (note:  specify levels in meters ASL)
 
-        ! NOTE:  this section of code expects the model heights on FULL LEVELS 
-        !        (aka w levels), eg, 0.0*dz, 1.0*dz, 2.0*dz, 3.0*dz, etc 
+        ! NOTE:  this section of code expects the model heights on FULL LEVELS
+        !        (aka w levels), eg, 0.0*dz, 1.0*dz, 2.0*dz, 3.0*dz, etc
 
         if( myid.eq.0 )then
 
@@ -8107,14 +8111,14 @@
 !  End hard-wired analytic stretching function
 !-----------------------------------------------------------------------
 !
-!  Optional:  to use a different stretching function, or to use 
-!  arbitrarily located grid points, simply comment out the 
+!  Optional:  to use a different stretching function, or to use
+!  arbitrarily located grid points, simply comment out the
 !  "hard-wired" section above, and then specify values for zf
 !  here.  Do not change anything below here!
 !
-!  Note:  zf stores the location of the staggered w points. 
+!  Note:  zf stores the location of the staggered w points.
 !
-!  Note:  if you are using terrain, you need to also specify the nominal 
+!  Note:  if you are using terrain, you need to also specify the nominal
 !  locations of the zf points in the sigmaf array.
 !
 !-----------------------------------------------------------------------
@@ -8619,7 +8623,7 @@
           enddo
           enddo
         enddo
- 
+
         do j=jb,je
         do i=ib,ie
           do k=1,nk+1
@@ -8684,7 +8688,7 @@
         ENDIF
 
         ! 170803:  If you do not want/need the horizontal Rayleigh damper
-        !          on certain sides of the domain, then set the 
+        !          on certain sides of the domain, then set the
         !          appropriate variable below to .false.
 
         hrdamp_west   =  .true.
@@ -9098,7 +9102,7 @@
           if(dowr) write(outfile,*) '  ... using Thompson microphysics scheme ... '
           if(dowr) write(outfile,*) '         numq   = ',numq
           if(dowr) write(outfile,*)
-          if(dowr) write(outfile,*) '         assuming constant cloud droplet concentration' 
+          if(dowr) write(outfile,*) '         assuming constant cloud droplet concentration'
           if(dowr) write(outfile,*) '         Nt_c   = ',Nt_c
           if(dowr) write(outfile,*)
           if(dowr) write(outfile,*) ' ----------------------------------------------- '
@@ -9796,9 +9800,9 @@
 ! >>>>>>>>>>>>>>>>>>>>>>>>>>>>   SUBROUTINE ZGRID  <<<<<<<<<<<<<<<<<<<<<<<<<<< !
 !
 !-------------------------------------------------------------------------------
-! Creates the vertical grid using a geometric stretch 
+! Creates the vertical grid using a geometric stretch
 !
-! Option - set nbndlyr > 0 input deck.  A suggested value is ~ nz/4 to create a 
+! Option - set nbndlyr > 0 input deck.  A suggested value is ~ nz/4 to create a
 ! layer having constant resolution near the surface.
 !
 !-------------------------------------------------------------------------------
@@ -9862,7 +9866,7 @@
 !    write(6,*) 'ZGRID: gze,gzc = ',k,gze(k+1),gzc(k)
    ENDDO
 
-   gzc(nz) = 2.*gzc(nz-1) - gzc(nz-2) 
+   gzc(nz) = 2.*gzc(nz-1) - gzc(nz-2)
 
 
   END SUBROUTINE ZGRID
@@ -9891,11 +9895,11 @@
   sum = 0.0d0
   dzmaxdp = dzmax
   dzmax2dp = dzmax2
-  
+
 !  zctop = 10000.
 !  ztopr = 1.09
 !  dzmax2 = 1000. ! 2*dzmax
-  
+
   n2 = 0
 
   DO k = 1,nz
@@ -9929,10 +9933,10 @@
       integer, intent(in) :: nlevels
 
 
-      !  To reduce memory usage, the time-averaging code is designed as a series 
+      !  To reduce memory usage, the time-averaging code is designed as a series
       !  of smaller time averages.
       !
-      !  Total length of time averge is ntim * rtim.  
+      !  Total length of time averge is ntim * rtim.
       !  (so, ntim = 5 with rtime = 60.0s  yields 300-s average
 
 

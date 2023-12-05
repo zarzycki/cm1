@@ -495,7 +495,8 @@
 !         (which is nz * dz when stretch_z=0, or ztop when stretch_z=1,  etc)
 !
 
-      ELSEIF( isnd.eq.7 .or. isnd.eq.17)then
+!      ELSEIF( isnd.eq.7 .or. isnd.eq.17)then
+      ELSEIF( isnd.eq.7 .or. isnd.eq.17 .or. isnd.eq.99)then
 
         if(dowr) write(outfile,*)
         if(dowr) write(outfile,*) ' Reading sounding from external file, input_sounding'
@@ -570,11 +571,14 @@
         ! now, read entire sounding until end of file is discovered
         nsnd=1
         do k=1,nmax
-          if( isnd.eq.7 )then
-            !++CMZ
+          !++CMZ
+          if( isnd.eq.99 )then
+
             read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1),usnd(k+1),vsnd(k+1),  &
                  ugsnd(k+1),vgsnd(k+1),wprofsnd(k+1)
-            !--CMZ
+          !--CMZ
+          elseif( isnd.eq.7 )then
+            read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1),usnd(k+1),vsnd(k+1)
           elseif( isnd.eq.17 )then
             read(40,*,end=445,err=9008) zsnd(k+1),thsnd(k+1),qvsnd(k+1)
           else
@@ -644,7 +648,10 @@
 
         if(imoist.eq.0) qvsnd = 0.0
 
-      if( isnd.eq.7 )then
+!++CMZ
+      !if( isnd.eq.7 )then
+      if( isnd.eq.7 .or. isnd.eq.99  )then
+!--CMZ
         ! dont remember where this formulation comes from:
 !!!        usnd(1) = 1.75*usnd(2)-usnd(3)+0.25*usnd(4)
 !!!        vsnd(1) = 1.75*vsnd(2)-vsnd(3)+0.25*vsnd(4)
@@ -2315,8 +2322,10 @@
 ! already been retrieved from the input_sounding file
 !--------------------------
 
-    IF(isnd.ne.7)THEN
-
+!++CMZ
+!    IF(isnd.ne.7)THEN
+    IF(isnd.ne.7 .and. isnd.ne.99)THEN
+!--CMZ
       do k=1,nk
       do j=1,nj
       do i=1,ni+1
@@ -2869,6 +2878,27 @@
 
 
     ENDIF
+
+!++CMZ
+! Print diagnostics
+    IF( testcase .eq. 99 )THEN
+
+      if( myid.eq.0 ) print *
+      if( myid.eq.0 ) print *,'  k,zf,wprof:'
+
+      do k=1,nk
+        if( myid.eq.0 ) print *,k,zf(1,1,k),wprof(k)
+      enddo
+
+      if( myid.eq.0 ) print *
+      if( myid.eq.0 ) print *,'  k,ug,vg '
+
+      do k=1,nk
+        if( myid.eq.0 ) print *,k,zf(1,1,k),ug(k),vg(k)
+      enddo
+
+    ENDIF
+!--CMZ
 
     !-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-c-!
 
