@@ -1,13 +1,22 @@
 begin
 
-year="2020"
+;year="2020"
 ;month="02"
 ;day="01"
 ;hh="00"
-sample_lat=13.
-sample_lon=-58.+360.
+;sample_lat=13.
+;sample_lon=-58.+360.
+
+; location logic
+sample_lat := tofloat(sample_lat)
+sample_lon := tofloat(sample_lon)
+if (sample_lon .lt. 0.0) then
+  sample_lon = sample_lon + 360.0
+end if
 
 fullstr = year+month+day+hh
+
+print("NCL diags: "+fullstr+"  lat: "+sample_lat+"    lon: "+sample_lon)
 
 zf=addfile("~/rda/ds633.0/e5.oper.an.pl/"+year+month+"/e5.oper.an.pl.128_129_z.ll025sc."+year+month+day+"00_"+year+month+day+"23.nc","r")
 uf=addfile("~/rda/ds633.0/e5.oper.an.pl/"+year+month+"/e5.oper.an.pl.128_131_u.ll025uv."+year+month+day+"00_"+year+month+day+"23.nc","r")
